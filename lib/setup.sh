@@ -17,9 +17,8 @@ fi
 modprobe batman-adv
 
 # Disable and configure wlan0
-ip link set wlan0 down
+ifconfig wlan0 down
 # stop wpa supplicant from locking if
-systemctl stop wpa_supplicant
 pkill -9 wpa_supplicant
 sleep 2s
 
@@ -27,7 +26,7 @@ sleep 2s
 iwconfig wlan0 \
 	mode ad-hoc \
 	essid meshpinet \
-	ap any \
+	ap 02:12:34:56:78:9A \
 	channel 1
 sleep 2s
 
@@ -36,8 +35,8 @@ batctl if add wlan0
 sleep 2s
 
 # bring if back up
-ip link set dev wlan0 up
-ip link set dev bat0 up
+iwconfig wlan0 up
+iwconfig bat0 up
 sleep 4s
 
 ip addr add 172.16.0.$IP/24 dev bat0
