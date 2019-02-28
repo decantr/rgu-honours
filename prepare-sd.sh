@@ -2,8 +2,11 @@
 
 if [[ $EUID -ne 0 ]]; then echo "please run as root" && exit 1; fi
 
-if [[ $1 =~ ^[0-9]+$ ]]; then IP=$1;
-else echo "please  provide a ip adress" && exit 1; fi
+# determine whether we are making a bridge or a node
+bridge=false
+if [[ $1 =~ ^[0-9]+$ ]]; then
+	if [[ $1 == 1 ]]; then bridge=true; fi
+else echo "please choose either node(0) or bridge(1)" && exit 1; fi
 
 # ask the user for the drive
 lsblk | grep -e "disk" | grep -v "sda"
@@ -44,7 +47,7 @@ sleep 1
 
 echo -e "moving files\\n"
 sudo touch /mnt/sd/boot/ssh
-sudo sed -i "\$iif [ -e /setup.sh ]; then bash /setup.sh $IP; fi" /mnt/sd/root/etc/rc.local
+sudo sed -i "\$iif [ -e /setup.sh ]; then bash /setup.sh $bridge; fi" /mnt/sd/root/etc/rc.local
 sudo cp lib/setup.sh /mnt/sd/root/
 sudo cp -r deps /mnt/sd/root/
 

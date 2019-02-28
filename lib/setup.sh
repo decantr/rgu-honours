@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IP="$1"
+bridge="$1"
 
 # required packages
 packages=(
@@ -8,6 +8,11 @@ packages=(
 	"libnl-genl-3-200_3.4.0-1_armhf.deb"
 	"batctl_2019.0-1_armhf.deb"
 )
+
+# add bridge-utils if a bridge device
+if $bridge ; then
+	packages+=("bridge-utils_1.5-13+deb9u1_armhf.deb")
+fi
 
 if ! command -v batctl; then
 	for i in "${packages[@]}"; do dpkg -i "/deps/$i"; done
@@ -39,4 +44,16 @@ iwconfig wlan0 up
 iwconfig bat0 up
 sleep 4s
 
-ip addr add 172.16.0.$IP/24 dev bat0
+if $bridge; then
+	#setup the bridge
+	brctl addbr bri0
+
+	brctl addif bri0 bat0
+	brctl addif bri0 eth0
+
+	dhclient bri0
+
+else
+	# get the ip for the if
+	dhclient bat0
+fi
