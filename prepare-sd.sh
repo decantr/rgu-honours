@@ -2,6 +2,24 @@
 
 if [[ $EUID -ne 0 ]]; then echo "please run as root" && exit 1; fi
 
+deps=(
+	"batctl/batctl_2016.5-1_armhf.deb"
+	"batctl/batctl_2019.0-1_armhf.deb"
+	"bridge-utils/bridge-utils_1.5-13%2bdeb9u1_armhf.deb"
+)
+
+# get the deps
+if [ -z "$(ls -A deps)" ]; then
+	if [ ! -d deps ]; then mkdir deps; fi
+	cd deps || exit 1
+
+	for i in "${deps[@]}"; do
+		curl -LO "http://archive.raspbian.org/raspbian/pool/main/b/${i}"
+	done
+
+	cd ..
+fi
+
 # determine whether we are making a bridge or a node
 bridge=false
 if [[ $1 =~ ^[0-9]+$ ]]; then
