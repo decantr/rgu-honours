@@ -1,7 +1,5 @@
 #!/bin/bash
 
-if [[ $EUID -ne 0 ]]; then echo "please run as root" && exit 1; fi
-
 deps=(
 	"batctl/batctl_2016.5-1_armhf.deb"
 	"batctl/batctl_2019.0-1_armhf.deb"
@@ -63,8 +61,8 @@ sync
 sleep 1
 
 echo -e "mounting drives\\n"
-mount "$drive"1 /mnt/sd/boot
-mount "$drive"2 /mnt/sd/root
+sudo mount "$drive"1 /mnt/sd/boot
+sudo mount "$drive"2 /mnt/sd/root
 
 sleep 1
 
