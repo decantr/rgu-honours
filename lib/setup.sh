@@ -2,16 +2,17 @@
 
 bridge="$1"
 
-# required packages
-packages=(
-	"libnl-3-200_3.4.0-1_armhf.deb"
-	"libnl-genl-3-200_3.4.0-1_armhf.deb"
-	"batctl_2019.0-1_armhf.deb"
-)
 
-# add bridge-utils if a bridge device
+# required packages
+# use 2019 if its a bridge or 2016 if not
 if $bridge ; then
-	packages+=("bridge-utils_1.5-13+deb9u1_armhf.deb")
+	# add bridge-utils if a bridge device
+	packages=(
+		"batctl_2019.0-1_armhf.deb"
+		"bridge-utils_1.5-13+deb9u1_armhf.deb"
+	)
+else
+	packages=("batctl_2016.5-1_armhf.deb")
 fi
 
 if ! command -v batctl; then
