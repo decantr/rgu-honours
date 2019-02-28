@@ -40,8 +40,8 @@ batctl if add wlan0
 sleep 2s
 
 # bring if back up
-iwconfig wlan0 up
-iwconfig bat0 up
+ifconfig wlan0 up
+ifconfig bat0 up
 sleep 4s
 
 if $bridge; then
