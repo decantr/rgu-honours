@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ $EUID -ne 0 ]]; then echo "please run as root" && exit 1; fi
+
+if [[ $1 =~ ^[0-9]+$ ]]; then IP=$1;
+else echo "please  provide a ip adress" && exit 1; fi
+
 # ask the user for the drive
 lsblk | grep -e "disk" | grep -v "sda"
 while [ "$drive" = "" ]; do
@@ -28,6 +33,9 @@ if [ ! -d /mnt/sd/boot ]; then sudo mkdir -p /mnt/sd/boot /mnt/sd/root; fi
 # if the drive is at mmcblk0 then add p to drive name
 if ! echo "$drive" | grep "sd"; then drive="$drive"p; fi
 
+sync
+sleep 1
+
 echo -e "mounting drives\\n"
 mount "$drive"1 /mnt/sd/boot
 mount "$drive"2 /mnt/sd/root
@@ -36,7 +44,7 @@ sleep 1
 
 echo -e "moving files\\n"
 sudo touch /mnt/sd/boot/ssh
-sudo sed -i "\$iif [ -e /setup.sh ]; then bash /setup.sh; fi" /mnt/sd/root/etc/rc.local
+sudo sed -i "\$iif [ -e /setup.sh ]; then bash /setup.sh $IP; fi" /mnt/sd/root/etc/rc.local
 sudo cp lib/setup.sh /mnt/sd/root/
 sudo cp -r deps /mnt/sd/root/
 
