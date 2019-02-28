@@ -9,12 +9,12 @@ deps=(
 )
 
 # get the deps
-if [ -z "$(ls -A deps)" ]; then
+if [ -z "$(ls -A deps 2>/dev/null)" ]; then
 	if [ ! -d deps ]; then mkdir deps; fi
 	cd deps || exit 1
 
 	for i in "${deps[@]}"; do
-		curl -LO "http://archive.raspbian.org/raspbian/pool/main/b/${i}"
+		curl -sLO "http://archive.raspbian.org/raspbian/pool/main/b/${i}"
 	done
 
 	cd ..
