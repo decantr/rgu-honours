@@ -20,6 +20,11 @@ if [ -z "$(ls -A deps 2>/dev/null)" ]; then
 	cd ..
 fi
 
+# check for the iso
+if [ ! -f 'raspbian.zip' ]; then
+	curl -L 'downloads.raspberrypi.org/raspbian_lite_latest' -o 'raspbian.zip'
+fi
+
 # determine whether we are making a bridge or a node
 bridge=false
 if [[ $1 =~ ^[0-9]+$ ]]; then
