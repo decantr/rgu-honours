@@ -20,10 +20,16 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	var jstrs string = "usage,host=" + name + " cpu_usage=" + strconv.Itoa(rand.Intn(100))
+// simulated water level, temperature, purity and current
+	lvl := strconv.Itoa(rand.Intn(12))
+	tmp := strconv.Itoa(rand.Intn(30))
+	pry := strconv.Itoa(rand.Intn(100))
+	crn := strconv.Itoa(rand.Intn(30))
+
+	var jstrs string = "usage,host=" + name + " water_level=" + lvl + ",water_temp=" + tmp + ",water_purity=" + pry + ",water_current=" + crn
 	var jstr = []byte(jstrs)
 
-	req, err := http.NewRequest("POST", turl, bytes.NewBuffer(jstr))
+	req, _ := http.NewRequest("POST", turl, bytes.NewBuffer(jstr))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	res, err := client.Do(req)
