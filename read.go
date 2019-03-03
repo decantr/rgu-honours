@@ -5,15 +5,21 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
+	"os"
+	"time"
 )
 
 func main() {
 
 	client := http.Client{}
 	turl := "http://localhost:8086/write?db=test&"
+	name, _ := os.Hostname()
 
-	jstrs := "usage,host=xps cpu_usage=77"
+	rand.Seed(time.Now().UnixNano())
+
+	var jstrs string = "usage,host=" + name + " cpu_usage=77"
 	var jstr = []byte(jstrs)
 
 	req, err := http.NewRequest("POST", turl, bytes.NewBuffer(jstr))
