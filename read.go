@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -19,7 +20,7 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	var jstrs string = "usage,host=" + name + " cpu_usage=77"
+	var jstrs string = "usage,host=" + name + " cpu_usage=" + strconv.Itoa(rand.Intn(100))
 	var jstr = []byte(jstrs)
 
 	req, err := http.NewRequest("POST", turl, bytes.NewBuffer(jstr))
