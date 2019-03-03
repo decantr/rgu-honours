@@ -1,32 +1,31 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 )
 
 func main() {
 
 	turl := "http://localhost:8086/write?db=test"
 
-	res, err := http.PostForm(turl,
-		url.Values{"measurement": {"usage"}})
+	var jstr = []byte(`usage,host=xps cpu_usage=77`)
 
-	//  "tags": url.Values{"host": \"xps"}, "fields": url.Values{"cpu_usage": "100"}})
+	req, err := http.NewRequest("POST", turl, bytes.NewBuffer(jstr))
+	req.Header.Set("Content-Type", "application/json")
 
-	//	res, err := http.PostForm("http://duckduckgo.com",
-	//		url.Values{"q": {"github"}})
-
+	client := &http.Client{}
+	res, err := client.Do(req)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
-	fmt.Println("p:\n", string(body), 3)
 	fmt.Println("response Status:", res.Status)
 	fmt.Println("response Headers:", res.Header)
+	fmt.Println("response Body:", string(body))
 }
