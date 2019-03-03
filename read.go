@@ -2,9 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
-	"io/ioutil"
-	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -13,34 +10,29 @@ import (
 )
 
 func main() {
-
-	client := http.Client{}
-	turl := "http://localhost:8086/write?db=test&"
-	name, _ := os.Hostname()
-
+	// create random seed from current time
 	rand.Seed(time.Now().UnixNano())
 
-// simulated water level, temperature, purity and current
+	// create things for later
+	const url = "http://localhost:8086/write?db=test&"
+	cln := http.Client{}
+	hst, _ := os.Hostname()
+
+	// simulated water level, temperature, purity and current
 	lvl := strconv.Itoa(rand.Intn(12))
 	tmp := strconv.Itoa(rand.Intn(30))
 	pry := strconv.Itoa(rand.Intn(100))
 	crn := strconv.Itoa(rand.Intn(30))
 
-	var jstrs string = "usage,host=" + name + " water_level=" + lvl + ",water_temp=" + tmp + ",water_purity=" + pry + ",water_current=" + crn
-	var jstr = []byte(jstrs)
+	// construct the string to send to influx and convert to bytestream
+	jss := "usage,host=" + hst + " water_level=" + lvl + ",water_temp=" + tmp + ",water_purity=" + pry + ",water_current=" + crn
+	jsb := []byte(jss)
 
-	req, _ := http.NewRequest("POST", turl, bytes.NewBuffer(jstr))
+	// create the post request and set the content type
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsb))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	res, err := client.Do(req)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-	fmt.Println("response Status:", res.Status)
-	fmt.Println("response Headers:", res.Header)
-	fmt.Println("response Body:", string(body))
+	// attach the request to the client and send
+	res, _ := cln.Do(req)
+	res.Body.Close()
 }
