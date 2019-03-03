@@ -10,15 +10,17 @@ import (
 
 func main() {
 
-	turl := "http://localhost:8086/write?db=test"
+	client := http.Client{}
+	turl := "http://localhost:8086/write?db=test&"
 
-	var jstr = []byte(`usage,host=xps cpu_usage=77`)
+	jstrs := "usage,host=xps cpu_usage=77"
+	var jstr = []byte(jstrs)
 
 	req, err := http.NewRequest("POST", turl, bytes.NewBuffer(jstr))
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	client := &http.Client{}
 	res, err := client.Do(req)
+
 	if err != nil {
 		log.Fatal(err)
 	}
