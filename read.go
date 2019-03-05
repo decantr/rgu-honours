@@ -14,7 +14,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	// create things for later
-	const url = "http://localhost:8086/write?db=test&"
+	const url = "http://192.168.1.4:8086/write?db=test&"
 	cln := http.Client{}
 	hst, _ := os.Hostname()
 
