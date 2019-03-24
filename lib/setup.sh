@@ -2,7 +2,6 @@
 
 bridge="$1"
 
-
 # required packages
 # use 2019 if its a bridge or 2016 if not
 if $bridge ; then
@@ -54,6 +53,12 @@ if $bridge; then
 
 	dhclient bri0
 
+	if ! command -v docker; then
+		curl -kfsSL get.docker.com | bash
+		docker create --name sensordb --restart=always -p 8086:8086 influxdb
+		docker start sensordb
+		curl 'http://localhost:8086/query' --data-urlencode "q=create database main"
+	fi
 else
 	# get the ip for the if
 	dhclient bat0
