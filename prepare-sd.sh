@@ -29,6 +29,19 @@ if [[ $1 =~ ^[0-9]+$ ]]; then
 	if [[ $1 == 1 ]]; then bridge=true; fi
 else echo "please choose either node(0) or bridge(1)" && exit 1; fi
 
+# determine what architecture we are deploying to
+if $bridge ; then
+	reporter="reporter/reporter-arm"
+	echo "pi2 and 3 are armhf, pi0 is armel"
+	while [ "$drive" = "" ]; do
+		read -rp "enter either armhf or armhf"
+		if [ "$REPLY" == "armhf" ] || [ "$REPLY" == "armel" ]; then
+			echo ok
+		fi
+	done
+fi
+
+
 # ask the user for the drive
 lsblk | grep -e "disk" | grep -v "sda"
 while [ "$drive" = "" ]; do
