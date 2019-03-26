@@ -84,7 +84,7 @@ sudo sed -i "\$iif [ -e /setup.sh ]; then bash /setup.sh $bridge; fi" /mnt/sd/ro
 sudo cp lib/setup.sh /mnt/sd/root/
 sudo cp -r deps /mnt/sd/root/
 if [ "$reporter" ]; then
-	sudo cp "reporter/$reporter" /mnt/sd/root/
+	sudo cp "reporter/$reporter" /mnt/sd/root/reporter
 fi
 
 sleep 1

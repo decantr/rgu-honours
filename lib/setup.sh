@@ -62,4 +62,5 @@ if $bridge; then
 else
 	# get the ip for the if
 	dhclient bat0
+	/reporter
 fi
