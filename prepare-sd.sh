@@ -19,8 +19,8 @@ if [ -z "$(ls -A deps 2>/dev/null)" ]; then
 fi
 
 # check for the iso
-if [ ! -f 'raspbian.zip' ]; then
-	curl -L 'downloads.raspberrypi.org/raspbian_lite_latest' -o 'raspbian.zip'
+if [ ! -f 'raspbian-lite-latest.zip' ]; then
+	curl -L 'downloads.raspberrypi.org/raspbian_lite_latest' -o 'raspbian-lite-latest.zip'
 fi
 
 # determine whether we are making a bridge or a node
@@ -44,9 +44,9 @@ done
 echo -e "\\nthis will erase all data on $drive, are you sure?"
 read -p "Are you sure? " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-	echo "writing $(du -h "raspbian.zip" | cut -f 1) to $drive"
+	echo "writing $(du -h "raspbian-lite-latest.zip" | cut -f 1) to $drive"
 	umount "$drive" "$drive"1 "$drive"2 "$drive"p1 "$drive"p2 2>/dev/null
-	unzip -p 'raspbian.zip' | sudo tee "$drive" > /dev/null
+	unzip -p 'raspbian-lite-latest.zip' | sudo tee "$drive" > /dev/null
 else
 	exit 1
 fi
