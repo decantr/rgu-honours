@@ -30,17 +30,16 @@ if [[ $1 =~ ^[0-9]+$ ]]; then
 else echo "please choose either node(0) or bridge(1)" && exit 1; fi
 
 # determine what architecture we are deploying to
-if $bridge ; then
-	reporter="reporter/reporter-arm"
+if ! $bridge ; then
 	echo "pi2 and 3 are armhf, pi0 is armel"
-	while [ "$drive" = "" ]; do
-		read -rp "enter either armhf or armhf"
+	while [ "$reporter" == "" ]; do
+		read -rp "enter either armhf or armel: "
 		if [ "$REPLY" == "armhf" ] || [ "$REPLY" == "armel" ]; then
-			echo ok
+			reporter="reporter-$REPLY"
+		else echo "Not a valid architecture"
 		fi
 	done
 fi
-
 
 # ask the user for the drive
 lsblk | grep -e "disk" | grep -v "sda"
@@ -84,6 +83,9 @@ sudo touch /mnt/sd/boot/ssh
 sudo sed -i "\$iif [ -e /setup.sh ]; then bash /setup.sh $bridge; fi" /mnt/sd/root/etc/rc.local
 sudo cp lib/setup.sh /mnt/sd/root/
 sudo cp -r deps /mnt/sd/root/
+if [ "$reporter" ]; then
+	sudo cp "reporter/$reporter" /mnt/sd/root/
+fi
 
 sleep 1
 sudo sync
