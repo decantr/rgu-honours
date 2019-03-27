@@ -52,6 +52,18 @@ while [ "$drive" = "" ]; do
 	fi
 done
 
+# ask the user if we are deploying to eduroam
+read -p ":: Are we deploying to an eduroam network [y/N] " -r
+if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+	# ask for an ip address
+	while [ "$ip" = "" ]; do
+		read -p ":: Select an IP Address 172.16.0." -r
+		if [[ "$REPLY" =~ ^[0-9]+$ ]]; then
+			ip="$REPLY"
+		else echo "not a valid ip"; fi
+	done
+fi
+
 # mount the iso
 echo -e "\\nthis will erase all data on $drive, are you sure?"
 read -p "Are you sure? " -r
