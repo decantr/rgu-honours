@@ -3,7 +3,7 @@
 deps=(
 	"batctl/batctl_2016.5-1_armhf.deb"
 	"batctl/batctl_2019.0-1_armhf.deb"
-	"bridge-utils/bridge-utils_1.5-13%2bdeb9u1_armhf.deb"
+	"bridge-utils/bridge-utils_1.5-13+deb9u1_armhf.deb"
 )
 
 # get the deps
