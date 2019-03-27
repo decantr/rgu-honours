@@ -57,6 +57,7 @@ if $bridge; then
 		curl -kfsSL get.docker.com | bash
 		docker create --name sensordb --restart=always -p 8086:8086 influxdb
 		docker start sensordb
+		sleep 10
 		curl 'http://localhost:8086/query' --data-urlencode "q=create database main"
 	fi
 else
