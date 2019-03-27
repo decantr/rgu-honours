@@ -92,7 +92,7 @@ sleep 1
 
 echo -e "moving files\\n"
 sudo touch /mnt/sd/boot/ssh
-sudo sed -i "\$iif [ -e /setup.sh ]; then bash /setup.sh $bridge; fi" /mnt/sd/root/etc/rc.local
+sudo sed -i "\$ibash /setup.sh $bridge $ip" /mnt/sd/root/etc/rc.local
 sudo cp lib/setup.sh /mnt/sd/root/
 sudo cp -r deps /mnt/sd/root/
 if [ "$reporter" ]; then

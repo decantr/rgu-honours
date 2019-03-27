@@ -1,6 +1,7 @@
 #!/bin/bash
 
 bridge="$1"
+ip="$2"
 
 # required packages
 # use 2019 if its a bridge or 2016 if not
@@ -45,6 +46,9 @@ ifconfig bat0 up
 sleep 4s
 
 if $bridge; then
+	if $ip; then
+		ip addr add 172.16.0.$ip/24 dev bat0
+	else
 	#setup the bridge
 	brctl addbr bri0
 
@@ -53,12 +57,13 @@ if $bridge; then
 
 	dhclient bri0
 
-	if ! command -v docker; then
-		curl -kfsSL get.docker.com | bash
-		docker create --name sensordb --restart=always -p 8086:8086 influxdb
-		docker start sensordb
-		sleep 10
-		curl 'http://localhost:8086/query' --data-urlencode "q=create database main"
+		if ! command -v docker; then
+			curl -kfsSL get.docker.com | bash
+			docker create --name sensordb --restart=always -p 8086:8086 influxdb
+			docker start sensordb
+			sleep 10
+			curl 'http://localhost:8086/query' --data-urlencode "q=create database main"
+		fi
 	fi
 else
 	# get the ip for the if
