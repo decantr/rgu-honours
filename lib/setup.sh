@@ -79,5 +79,6 @@ if $bridge; then
 else
 	# get the ip for the if
 	dhclient bat0
-	/reporter
+	# add the reporter file to the crontab
+	(crontab -l 2>/dev/null; echo "* * * * * /reporter") | crontab -
 fi
