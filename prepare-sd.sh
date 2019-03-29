@@ -64,6 +64,18 @@ if [[ "$REPLY" =~ ^[Yy]$ ]]; then
 	done
 fi
 
+# determine the name of the device
+if $bridge ; then
+		name="sensor-bridge"
+else
+	if [ ! $ip = "" ]; then
+		name="sensor-$ip"
+	else
+		name="sensor-"$(date | md5sum | cut -c1-8)
+	fi
+fi
+echo ":: Hostname set to : $name"
+
 # mount the iso
 echo -e "\\nthis will erase all data on $drive, are you sure?"
 read -p "Are you sure? " -r
@@ -91,8 +103,14 @@ sudo mount "$drive"2 /mnt/sd/root
 sleep 1
 
 echo -e "moving files\\n"
+# create ssh file to enable ssh
 sudo touch /mnt/sd/boot/ssh
+# tell rc.local to run the setup script on startup
 sudo sed -i "\$ibash /setup.sh $bridge $ip" /mnt/sd/root/etc/rc.local
+# change the hostname
+echo "$name" | sudo tee /mnt/sd/root/etc/hostname > /dev/null
+# change the hostname in the hosts file
+sudo sed -i -e "s/raspberrypi/$name/" /mnt/sd/root/etc/hosts
 sudo cp lib/setup.sh /mnt/sd/root/
 sudo cp -r deps /mnt/sd/root/
 if [ "$reporter" ]; then
