@@ -52,6 +52,18 @@ while [ "$drive" = "" ]; do
 	fi
 done
 
+# ask the user if we are deploying to eduroam
+read -p ":: Are we deploying to an eduroam network [y/N] " -r
+if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+	# ask for an ip address
+	while [ "$ip" = "" ]; do
+		read -p ":: Select an IP Address 172.16.0." -r
+		if [[ "$REPLY" =~ ^[0-9]+$ ]]; then
+			ip="$REPLY"
+		else echo "not a valid ip"; fi
+	done
+fi
+
 # mount the iso
 echo -e "\\nthis will erase all data on $drive, are you sure?"
 read -p "Are you sure? " -r
@@ -80,7 +92,7 @@ sleep 1
 
 echo -e "moving files\\n"
 sudo touch /mnt/sd/boot/ssh
-sudo sed -i "\$iif [ -e /setup.sh ]; then bash /setup.sh $bridge; fi" /mnt/sd/root/etc/rc.local
+sudo sed -i "\$ibash /setup.sh $bridge $ip" /mnt/sd/root/etc/rc.local
 sudo cp lib/setup.sh /mnt/sd/root/
 sudo cp -r deps /mnt/sd/root/
 if [ "$reporter" ]; then
