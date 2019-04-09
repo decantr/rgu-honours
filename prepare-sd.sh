@@ -13,8 +13,7 @@ if [ -z "$(ls -A deps 2>/dev/null)" ]; then
 	cd deps || exit 1
 
 	for i in "${deps[@]}"; do
-		curl -sLO "http://archive.raspbian.org/raspbian/pool/main/b/${i}" || \
-			echo ":: ERROR : Failed getting ${i}" && exit 1
+		curl -sLO "http://archive.raspbian.org/raspbian/pool/main/b/${i}" || $(	echo ":: ERROR : Failed getting ${i}" && exit 1 )
 	done
 
 	cd ..
