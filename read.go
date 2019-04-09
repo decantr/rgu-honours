@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
@@ -28,11 +29,19 @@ func main() {
 	jss := "usage,host=" + hst + " water_level=" + lvl + ",water_temp=" + tmp + ",water_purity=" + pry + ",water_current=" + crn
 	jsb := []byte(jss)
 
+	fmt.Println(jsb)
+
 	// create the post request and set the content type
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsb))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsb))
+	if err != nil {
+		fmt.Println(err)
+	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	// attach the request to the client and send
-	res, _ := cln.Do(req)
+	res, err := cln.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
 	res.Body.Close()
 }
