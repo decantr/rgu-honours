@@ -15,7 +15,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	// create things for later
-	const url = "http://sensor-bridge.local:8086/write?db=test&"
+	const url = "http://sensor-bridge.local:8086/write?db=main&"
 	cln := http.Client{}
 	hst, _ := os.Hostname()
 
