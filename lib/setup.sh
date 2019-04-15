@@ -53,7 +53,7 @@ if $bridge; then
 			sleep 1
 		done
 
-		curl -kfsSL get.docker.com | bash
+		curl -fsSL get.docker.com | bash
 		docker create \
 			--name sensordb \
 			--restart=always \
