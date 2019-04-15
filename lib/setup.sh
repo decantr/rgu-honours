@@ -68,7 +68,7 @@ if $bridge; then
 	fi
 
 	# if ip has been set and passed through
-	if [ -n  $ip ]; then
+	if [ -n  "$ip" ]; then
 		# set the ip
 		ip addr add 172.16.0.$ip/24 dev bat0
 	else
