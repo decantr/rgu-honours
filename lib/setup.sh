@@ -48,6 +48,11 @@ sleep 4s
 if $bridge; then
 	if ! command -v docker; then
 
+		while ! curl -s google.com; do
+			echo "waiting for network to install docker"
+			sleep 1
+		done
+
 		curl -kfsSL get.docker.com | bash
 		docker create \
 			--name sensordb \
