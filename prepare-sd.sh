@@ -93,6 +93,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 else
 	exit 1
 fi
+echo ":: $(date) : ${name}" >> hostnames
 echo ":: INFO : Finished writing to $drive"
 
 # ensure mounting directories are there
