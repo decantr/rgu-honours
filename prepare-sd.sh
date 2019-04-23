@@ -1,10 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
-deps=(
-	"batctl/batctl_2016.5-1_armhf.deb"
-	"batctl/batctl_2019.0-1_armhf.deb"
-	"bridge-utils/bridge-utils_1.5-13+deb9u1_armhf.deb"
-)
+deps="batctl/batctl_2016.5-1_armhf.deb"
+deps="$deps batctl/batctl_2019.0-1_armhf.deb"
+deps="$deps bridge-utils/bridge-utils_1.5-13+deb9u1_armhf.deb"
 
 # get the deps
 if [ -z "$(ls -A deps 2>/dev/null)" ]; then
@@ -12,8 +10,10 @@ if [ -z "$(ls -A deps 2>/dev/null)" ]; then
 	if [ ! -d deps ]; then mkdir deps; fi
 	cd deps || exit 1
 
-	for i in "${deps[@]}"; do
-		curl -sLO "http://archive.raspbian.org/raspbian/pool/main/b/${i}" || $(	echo ":: ERROR : Failed getting ${i}" && exit 1 )
+	for i in ${deps}; do
+		if ! curl -sLO "http://archive.raspbian.org/raspbian/pool/main/b/$i"; then
+			echo ":: ERROR : Failed getting $i" && exit 1
+		fi
 	done
 
 	cd ..
@@ -30,16 +30,17 @@ fi
 
 # determine whether we are making a bridge or a node
 bridge=false
-if [[ $1 =~ ^[0-9]+$ ]]; then
-	if [[ $1 == 1 ]]; then bridge=true; fi
+if echo "$1" | grep -E "^[0-9]+$" 1>/dev/null; then
+	if [ "$1" = 1 ] ; then bridge=true; fi
 else echo "::		 Please choose node(0) or bridge(1)" && exit 1; fi
 
 # determine what architecture we are deploying to
 if ! $bridge ; then
 	echo "::		 Pi2 and 3 are armhf, Pi0 and Pi1 is armel"
-	while [ "$reporter" == "" ]; do
-		read -rp "::		 Choose either armhf or armel: "
-		if [ "$REPLY" == "armhf" ] || [ "$REPLY" == "armel" ]; then
+	while [ "$reporter" = "" ]; do
+		echo -n "::		 Choose either armhf or armel: "
+		read -r REPLY
+		if [ "$REPLY" = "armhf" ] || [ "$REPLY" = "armel" ]; then
 			reporter="reporter-$REPLY"
 		else echo ":: ERROR : Invalid Architecture"
 		fi
@@ -48,10 +49,12 @@ fi
 
 # ask the user for the drive
 echo "::		 Listing out available drives"
-lsblk | grep -e "disk" | grep -v "sda" | grep -v "nvme"
+disks=$(lsblk | grep -e "disk" | grep -v "sda" | grep -v "nvme")
+echo "$disks"
 while [ "$drive" = "" ]; do
-	read -r -p "::		 Please specify drive: /dev/"
-	if lsblk | grep -e "disk" | grep -e "$REPLY" >/dev/null; then
+	echo -n "::  Specifiy drive: /dev/"
+	read -r REPLY
+	if [ "$REPLY" != "" ] && echo "$disks" | grep -w "$REPLY" >/dev/null; then
 		drive="/dev/$REPLY"
 	else
 		echo ":: ERROR : Invalid Device"
@@ -59,12 +62,14 @@ while [ "$drive" = "" ]; do
 done
 
 # ask the user if we are deploying to eduroam
-read -p "::		 Are we deploying to an eduroam network [y/N] " -r
-if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+echo -n "::		 Are we deploying to an eduroam network [y/N] "
+read -r REPLY
+if echo "$REPLY" | grep -qwE "^[Yy]$" ; then
 	# ask for an ip address
 	while [ "$ip" = "" ]; do
-		read -p "::		 Select an IP Address: 172.16.0." -r
-		if [[ "$REPLY" =~ ^[0-9]+$ ]]; then
+		echo -n "::		 Select an IP Address: 172.16.0."
+		read -r REPLY
+		if echo "$REPLY" | grep -qE "^[0-9]+$"; then
 			ip="$REPLY"
 		else echo "not a valid ip"; fi
 	done
@@ -74,7 +79,7 @@ fi
 if $bridge ; then
 		name="sensor-bridge"
 else
-	if [ ! $ip = "" ]; then
+	if [ ! "$ip" = "" ]; then
 		name="sensor-$ip"
 	else
 		name="sensor-"$(date | md5sum | cut -c1-8)
@@ -84,12 +89,24 @@ echo "::		 Hostname set to $name"
 
 # mount the iso
 echo ":: WARNING : This will erase all data on $drive!"
-read -p "::		 Are you sure? [y/N] " -r
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-	echo "::		 Writing $(du -h "raspbian-lite-latest.zip" | cut -f 1) to $drive"
-	echo "::		 This will take a while"
+echo -n "::		 Are you sure? [y/N] "
+read -r REPLY
+if echo "$REPLY" | grep -wE "^[Yy]$" > /dev/null; then
 	umount "$drive" "$drive"1 "$drive"2 "$drive"p1 "$drive"p2 2>/dev/null
-	unzip -p 'raspbian-lite-latest.zip' | sudo tee "$drive" > /dev/null
+	if ! command -v unzip > /dev/null ; then
+		echo "::		 Writing $(du -bh "raspbian-lite-latest.zip" | cut -f 1) to $drive"
+		echo "::		 This may take a while"
+		unzip -p 'raspbian-lite-latest.zip' | sudo tee "$drive" > /dev/null
+	else
+		echo "::		 Unzip not installed! Searching for extracted .img"
+		if [ -f "raspbian-lite-latest.img" ]; then
+			echo "::		 Writing $(du -bh "raspbian-lite-latest.img" | cut -f 1) to $drive"
+			echo "::		 This may take a while"
+			sudo dd if="raspbian-lite-latest.img" of="$drive" status=progress
+		else
+			echo "::		 Could not find 'raspbian-lite-latest.img'" && exit 1
+		fi
+	fi
 else
 	exit 1
 fi
@@ -98,39 +115,39 @@ echo ":: INFO : Finished writing to $drive"
 
 # ensure mounting directories are there
 echo ":: INFO : Creating mounting directories"
-if [ ! -d /mnt/sd/boot ]; then sudo mkdir -p /mnt/sd/boot /mnt/sd/root; fi
+if [ ! -d sd/boot ]; then mkdir -p sd/boot sd/root; fi
 # if the drive is at mmcblk0 then add p to drive name
 if ! echo "$drive" | grep "sd"; then drive="$drive"p; fi
 
 sync
 sleep 1
 
-echo ":: INFO : Mounting $drive to /mnt/sd/"
-sudo mount "$drive"1 /mnt/sd/boot
-sudo mount "$drive"2 /mnt/sd/root
+echo ":: INFO : Mounting $drive to sd/"
+sudo mount "$drive"1 sd/boot
+sudo mount "$drive"2 sd/root
 
 sleep 1
 
 echo ":: INFO : Moving files"
 # create ssh file to enable ssh
-sudo touch /mnt/sd/boot/ssh
+sudo touch sd/boot/ssh
 # tell rc.local to run the setup script on startup
-sudo sed -i "\$ibash /setup.sh $bridge $ip" /mnt/sd/root/etc/rc.local
+sudo sed -i "\$ibash /setup.sh $bridge $ip" sd/root/etc/rc.local
 # change the hostname
-echo "$name" | sudo tee /mnt/sd/root/etc/hostname > /dev/null
+echo "$name" | sudo tee sd/root/etc/hostname > /dev/null
 # change the hostname in the hosts file
-sudo sed -i -e "s/raspberrypi/$name/" /mnt/sd/root/etc/hosts
-sudo cp lib/setup.sh /mnt/sd/root/
-sudo cp -r deps /mnt/sd/root/
+sudo sed -i -e "s/raspberrypi/$name/" sd/root/etc/hosts
+sudo cp lib/setup.sh sd/root/
+sudo cp -r deps sd/root/
 if [ "$reporter" ]; then
-	sudo cp "reporter/$reporter" /mnt/sd/root/reporter
+	sudo cp "reporter/$reporter" sd/root/reporter
 fi
 
 sleep 1
 sudo sync
 
 echo ":: INFO : Unmounting $drive"
-sudo umount /mnt/sd/boot
-sudo umount /mnt/sd/root
+sudo umount sd/boot
+sudo umount sd/root
 
 echo "::		 Install finished"
