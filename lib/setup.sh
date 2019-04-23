@@ -82,13 +82,18 @@ if $bridge; then
 
 	fi
 else
-	# get the ip for the if
-	dhclient bat0
-	# obtain the hostname and append to /etc/hosts
-	until ping -c 1 -q sensor-bridge.local &> /dev/null; do
-		sleep 1
-	done
-	getent hosts sensor-bridge.local | sudo tee -a /etc/hosts
+	if [ -n "$ip" ]; then
+		if ! grep -q "sensor-bridge.local" /etc/hosts 1>/dev/null; then
+			# obtain the hostname and append to /etc/hosts
+			until ping -c 1 -q sensor-bridge.local &> /dev/null; do
+				sleep 1
+			done
+			getent hosts sensor-bridge.local | sudo tee -a /etc/hosts
+		fi
+	else
+		# get the ip for the if
+		dhclient bat0
+	fi
 	# add the reporter file to the crontab
 	(crontab -l 2>/dev/null; echo "* * * * * /reporter") | crontab -
 fi
