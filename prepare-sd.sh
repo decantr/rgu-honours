@@ -99,7 +99,7 @@ printf "::    Are you sure? [y/N] "
 read -r REPLY
 if echo "$REPLY" | grep -wE "^[Yy]$" > /dev/null; then
 	umount "$drive" "$drive"1 "$drive"2 "$drive"p1 "$drive"p2 2>/dev/null
-	if ! command -v unzip > /dev/null ; then
+	if command -v unzip > /dev/null ; then
 		echo "::    Writing $(du -bh "raspbian-lite-latest.zip" | cut -f 1) to $drive"
 		echo "::    This may take a while"
 		unzip -p 'raspbian-lite-latest.zip' | sudo tee "$drive" > /dev/null
