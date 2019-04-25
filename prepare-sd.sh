@@ -81,6 +81,20 @@ if echo "$REPLY" | grep -qwE "^[Yy]$" ; then
 	done
 fi
 
+# ask if we should enable ssh
+while [ "$ssh" = "" ]; do
+	printf "::    Should SSH on port 22 be enabled? [Y/n] "
+	read -r REPLY
+	if [ "$REPLY" = "" ] || echo "$REPLY" | grep -qwE "^[Yy]$"; then
+		ssh=true;
+	elif echo "$REPLY" | grep -qwE "^[Nn]$"; then
+		ssh=false;
+	else
+		echo ":: ERROR : Invalid"
+	fi
+done
+
+
 # determine the name of the device
 if $bridge ; then
 		name="sensor-bridge"
@@ -135,8 +149,10 @@ sudo mount "$drive"2 sd/root
 sleep 1
 
 echo ":: INFO : Moving files"
-# create ssh file to enable ssh
-sudo touch sd/boot/ssh
+# create ssh file to enable ssh if user asked for it
+if $ssh ; then
+	sudo touch sd/boot/ssh
+fi
 # tell rc.local to run the setup script on startup
 sudo sed -i "\$ibash /setup.sh $bridge $ip" sd/root/etc/rc.local
 # change the hostname
