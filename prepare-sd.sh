@@ -30,9 +30,15 @@ fi
 
 # determine whether we are making a bridge or a node
 bridge=false
-if echo "$1" | grep -E "^[0-9]+$" 1>/dev/null; then
-	if [ "$1" = 1 ] ; then bridge=true; fi
-else echo "::		 Please choose node(0) or bridge(1)" && exit 1; fi
+printf "::    Is this a Node(0) or Bridge(1) [0] "
+read -r REPLY
+if [ "$REPLY" = 1 ]; then
+	bridge=true
+elif [ "$REPLY" = 0 ] || [ "$REPLY" = "" ]; then
+	bridge=false
+else
+	echo "::    Please choose Node(0) or Bridge(1)" && exit 1
+fi
 
 # determine what architecture we are deploying to
 if ! $bridge ; then
