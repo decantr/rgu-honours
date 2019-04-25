@@ -42,9 +42,9 @@ fi
 
 # determine what architecture we are deploying to
 if ! $bridge ; then
-	echo "::		 Pi2 and 3 are armhf, Pi0 and Pi1 is armel"
+	echo "::    Pi2 and 3 are armhf, Pi0 and Pi1 is armel"
 	while [ "$reporter" = "" ]; do
-		printf "::		 Choose either armhf or armel: "
+		printf "::    Choose either armhf or armel: "
 		read -r REPLY
 		if [ "$REPLY" = "armhf" ] || [ "$REPLY" = "armel" ]; then
 			reporter="reporter-$REPLY"
@@ -54,11 +54,11 @@ if ! $bridge ; then
 fi
 
 # ask the user for the drive
-echo "::		 Listing out available drives"
+echo "::    Listing out available drives"
 disks=$(lsblk | grep -e "disk" | grep -v "sda" | grep -v "nvme")
 echo "$disks"
 while [ "$drive" = "" ]; do
-	printf "::  Specifiy drive: /dev/"
+	printf "::    Specifiy drive: /dev/"
 	read -r REPLY
 	if [ "$REPLY" != "" ] && echo "$disks" | grep -w "$REPLY" >/dev/null; then
 		drive="/dev/$REPLY"
@@ -68,12 +68,12 @@ while [ "$drive" = "" ]; do
 done
 
 # ask the user if we are deploying to eduroam
-printf "::		 Are we deploying to an eduroam network [y/N] "
+printf "::    Are we deploying to an eduroam network [y/N] "
 read -r REPLY
 if echo "$REPLY" | grep -qwE "^[Yy]$" ; then
 	# ask for an ip address
 	while [ "$ip" = "" ]; do
-		printf "::		 Select an IP Address: 172.16.0."
+		printf "::    Select an IP Address: 172.16.0."
 		read -r REPLY
 		if echo "$REPLY" | grep -qE "^[0-9]+$"; then
 			ip="$REPLY"
@@ -91,26 +91,26 @@ else
 		name="sensor-"$(date | md5sum | cut -c1-8)
 	fi
 fi
-echo "::		 Hostname set to $name"
+echo "::    Hostname set to $name"
 
 # mount the iso
 echo ":: WARNING : This will erase all data on $drive!"
-printf "::		 Are you sure? [y/N] "
+printf "::    Are you sure? [y/N] "
 read -r REPLY
 if echo "$REPLY" | grep -wE "^[Yy]$" > /dev/null; then
 	umount "$drive" "$drive"1 "$drive"2 "$drive"p1 "$drive"p2 2>/dev/null
 	if ! command -v unzip > /dev/null ; then
-		echo "::		 Writing $(du -bh "raspbian-lite-latest.zip" | cut -f 1) to $drive"
-		echo "::		 This may take a while"
+		echo "::    Writing $(du -bh "raspbian-lite-latest.zip" | cut -f 1) to $drive"
+		echo "::    This may take a while"
 		unzip -p 'raspbian-lite-latest.zip' | sudo tee "$drive" > /dev/null
 	else
-		echo "::		 Unzip not installed! Searching for extracted .img"
+		echo "::    Unzip not installed! Searching for extracted .img"
 		if [ -f "raspbian-lite-latest.img" ]; then
-			echo "::		 Writing $(du -bh "raspbian-lite-latest.img" | cut -f 1) to $drive"
-			echo "::		 This may take a while"
+			echo "::    Writing $(du -bh "raspbian-lite-latest.img" | cut -f 1) to $drive"
+			echo "::    This may take a while"
 			sudo dd if="raspbian-lite-latest.img" of="$drive" status=progress
 		else
-			echo "::		 Could not find 'raspbian-lite-latest.img'" && exit 1
+			echo "::    Could not find 'raspbian-lite-latest.img'" && exit 1
 		fi
 	fi
 else
@@ -156,4 +156,4 @@ echo ":: INFO : Unmounting $drive"
 sudo umount sd/boot
 sudo umount sd/root
 
-echo "::		 Install finished"
+echo "::    Install finished"
