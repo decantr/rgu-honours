@@ -70,7 +70,9 @@ if $bridge; then
 	# if ip has been set and passed through
 	if [ -n  "$ip" ]; then
 		# set the ip
-		ip addr add 172.16.0.$ip/24 dev bat0
+		ipconfig bat0 down
+		ifconfig bat0 172.16.0.$ip/24
+		ifconfig bat0 up
 	else
 	# otherwise setup the bridge
 	brctl addbr bri0
@@ -84,7 +86,9 @@ if $bridge; then
 else
 	if [ -n "$ip" ]; then
 		# set the ip
-		ip addr add 172.16.0.$ip/24 dev bat0
+		ipconfig bat0 down
+		ifconfig bat0 172.16.0.$ip/24
+		ifconfig bat0 up
 	else
 		# get the ip for the if
 		dhclient bat0
