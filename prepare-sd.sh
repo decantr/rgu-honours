@@ -71,14 +71,19 @@ done
 printf "::    Are we deploying to an eduroam network [y/N] "
 read -r REPLY
 if echo "$REPLY" | grep -qwE "^[Yy]$" ; then
+	if $bridge ; then
+		echo "::    As this is the bridge setting to 172.16.0.1"
+		ip=1
+	else
 	# ask for an ip address
-	while [ "$ip" = "" ]; do
-		printf "::    Select an IP Address: 172.16.0."
-		read -r REPLY
-		if echo "$REPLY" | grep -qE "^[0-9]+$"; then
-			ip="$REPLY"
-		else echo "not a valid ip"; fi
-	done
+		while [ "$ip" = "" ]; do
+			printf "::    Select an IP Address: 172.16.0."
+			read -r REPLY
+			if echo "$REPLY" | grep -qE "^[0-9]+$"; then
+				ip="$REPLY"
+			else echo "not a valid ip"; fi
+		done
+	fi
 fi
 
 # ask if we should enable ssh
