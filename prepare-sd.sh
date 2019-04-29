@@ -58,7 +58,7 @@ echo "::    Listing out available drives"
 disks=$(lsblk | grep -e "disk" | grep -v "sda" | grep -v "nvme")
 echo "$disks"
 while [ "$drive" = "" ]; do
-	printf "::    Specifiy drive: /dev/"
+	printf "::    Specify drive: /dev/"
 	read -r REPLY
 	if [ "$REPLY" != "" ] && echo "$disks" | grep -w "$REPLY" >/dev/null; then
 		drive="/dev/$REPLY"
