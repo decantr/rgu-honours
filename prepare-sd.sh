@@ -68,23 +68,29 @@ while [ "$drive" = "" ]; do
 done
 
 # ask the user if we are deploying to eduroam
-printf "::    Are we deploying to an eduroam network [y/N] "
-read -r REPLY
-if echo "$REPLY" | grep -qwE "^[Yy]$" ; then
-	if $bridge ; then
-		echo "::    As this is the bridge setting to 172.16.0.1"
-		ip=1
-	else
-	# ask for an ip address
-		while [ "$ip" = "" ]; do
-			printf "::    Select an IP Address: 172.16.0."
-			read -r REPLY
-			if echo "$REPLY" | grep -qE "^[0-9]+$"; then
-				ip="$REPLY"
-			else echo "not a valid ip"; fi
-		done
+while [ "$ok" = "" ]; do
+	printf "::    Are we deploying to an eduroam network [y/N] "
+	read -r REPLY
+	if echo "$REPLY" | grep -qwE "^[Yy]$" ; then
+		if $bridge ; then
+			echo "::    As this is the bridge setting to 172.16.0.1"
+			ok="yes"
+			ip=1
+		else
+		# ask for an ip address
+			while [ "$ip" = "" ]; do
+				printf "::    Select an IP Address: 172.16.0."
+				read -r REPLY
+				if echo "$REPLY" | grep -qE "^[0-9]+$"; then
+					ok="yes"
+					ip="$REPLY"
+				else echo "not a valid ip"; fi
+			done
+		fi
+	elif echo "$REPLY" | grep -qwe "" -e "n" -e "N" ; then
+		break
 	fi
-fi
+done
 
 # ask if we should enable ssh
 while [ "$ssh" = "" ]; do
