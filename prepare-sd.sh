@@ -154,12 +154,21 @@ sudo mount "$drive"2 sd/root
 sleep 1
 
 echo ":: INFO : Moving files"
+# turn off bt, lights and audio
+sudo sed -ie "\$a\\
+dtoverlay=pi3-disable-bt\\
+dtparam=act_led_trigger=none\\
+dtparam=act_led_activelow=on\\
+dtparam=audio=off"
+sudo sed -i "\$i/usr/bin/tvservice -o" sd/root/etc/rc.local
 # create ssh file to enable ssh if user asked for it
 if $ssh ; then
 	sudo touch sd/boot/ssh
 fi
-# tell rc.local to run the setup script on startup
-sudo sed -i "\$ibash /setup.sh $bridge $ip" sd/root/etc/rc.local
+# tell rc.local to run the setup script on startup and turn off video out
+sudo sed -ie "\$i\\
+bash /setup.sh $bridge $ip\\
+/usr/bin/tvservice -o" sd/root/etc/rc.local
 # change the hostname
 echo "$name" | sudo tee sd/root/etc/hostname > /dev/null
 # change the hostname in the hosts file
