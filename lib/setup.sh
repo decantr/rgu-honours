@@ -61,9 +61,7 @@ if $bridge; then
 			influxdb
 		docker start sensordb
 		sleep 10
-		curl 'http://localhost:8086/query' \
-			--data-urlencode \
-			"q=create database main"
+		curl 'http://localhost:8086/query' -d 'q=create database main'
 
 	fi
 
