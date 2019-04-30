@@ -65,6 +65,26 @@ if $bridge; then
 
 	fi
 
+	# installing node
+	if ! command -v node; then
+		cd /tmp
+		wget https://nodejs.org/dist/v10.15.3/node-v10.15.3-linux-x64.tar.xz
+		tar xf node-v10.15.3-linux-armv7l.tar.xz
+		cd node-v10.15.3-linux-armv7l/
+		sudo mv bin/* /bin/
+		sudo mv lib/* /lib/
+		sudo mv share/* /usr/share/
+		cd /server
+		npm i -s express http-server
+		cd ~
+
+		sudo sed -i '$inode /server/server.js &' /etc/rc.local
+		sudo sed -i '$i/server/node_modules/http-server/bin/http-server /server &' /etc/rc.local
+		sleep 1
+		sync
+		reboot
+	fi
+
 	# if ip has been set and passed through
 	if [ -n  "$ip" ]; then
 		# set the ip

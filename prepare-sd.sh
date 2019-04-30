@@ -181,7 +181,10 @@ echo "$name" | sudo tee sd/root/etc/hostname > /dev/null
 sudo sed -i -e "s/raspberrypi/$name/" sd/root/etc/hosts
 sudo cp lib/setup.sh sd/root/
 sudo cp -r deps sd/root/
-if [ "$reporter" ]; then
+
+if $bridge; then
+	sudo cp -r lib/server sd/root/
+else
 	sudo cp "reporter/$reporter" sd/root/reporter
 fi
 
