@@ -80,6 +80,8 @@ if $bridge; then
 
 		sudo sed -i '$inode /server/server.js &' /etc/rc.local
 		sudo sed -i '$i/server/node_modules/http-server/bin/http-server /server &' /etc/rc.local
+
+		(crontab -l 2>/dev/null; echo "* * * * * cd /server && curl -LO https://github.com/decantr/rgu-honours-report/releases/download/1/reporter-armel ") | crontab -
 		sleep 1
 		sync
 		reboot
@@ -125,4 +127,5 @@ else
 	fi
 	# add the reporter file to the crontab
 	(crontab -l 2>/dev/null; echo "* * * * * /reporter") | crontab -
+	(crontab -l 2>/dev/null; echo "* * * * * cd / && curl -LO sensor-bridge.local/reporter-armel ") | crontab -
 fi
