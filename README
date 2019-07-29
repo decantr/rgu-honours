@@ -4,6 +4,10 @@ rgu-honours
 Distributed Mesh Sensor Network using Raspberry Pi's
 ----------------------------------------------------
 
+
+This acts as a sister repository for the code for my honours project which
+ can be found at [rgu-honours-docs](github.com/decantr/rgu-honours-docs).
+
 Motivation
 ----------
 The goal for this project evolved over time, my initial idea was to implement
@@ -21,8 +25,9 @@ From all of this the project pivoted to the title I have now.
 
 Breakdown
 ---------
-This repository contains the all of the code for the project, and in the docs
- folder contains the dissertation that accompanies this.
+This repository contains the all of the code for the project.
+The `lib` folder contains the files to be deployed to the Nodes once they
+ have been flashed.
 
 Structure
 ---------
