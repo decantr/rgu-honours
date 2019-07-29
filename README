@@ -45,6 +45,17 @@ Usage
 -----
 To use this in your project, you need only edit the `lib/setup.sh` to add your
  own changes and optionally the `server` folder to add your own frontend.
+The actual reporter program used in this project requires that you build it
+ before using it.
+Take note what architecture you are deploying to as the Pi 3 etc. is an ARMv7
+ device, while the Pi Zero, Pi 1 etc. is an ARMv6 device.
+
+```
+  $ env GOOS=linux GOARCH=arm GOARM=7 go build # Pi 3
+  $ env GOOS=linux GOARCH=arm GOARM=6 go build # Pi Zero
+```
+
+
 From there simply run the script and answer questiosn related to your setup.
 ```
 	$ prepare-sd.sh
