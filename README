@@ -1,0 +1,47 @@
+rgu-honours
+===========
+
+Distributed Mesh Sensor Network using Raspberry Pi's
+----------------------------------------------------
+
+Motivation
+----------
+The goal for this project evolved over time, my initial idea was to implement
+ a mesh network of sensors for monitoring various aspects a body of water and
+ building a front end that could display this information.
+when I began doing my initial research into the area for my literature review,
+I discovered that there was a distinct lack of tooling for deploying Pi's and
+ other SBC's as IoT devices.
+I began to create a tool that could facilitate this, as it would save
+ time deploying devices for my original idea anyway.
+It quickly became clear that this tool was of far greater value as a number
+ of colleagues asked for the tool, and flagged issues with it.
+
+From all of this the project pivoted to the title I have now.
+
+Breakdown
+---------
+This repository contains the all of the code for the project, and in the docs
+ folder contains the dissertation that accompanies this.
+
+Structure
+---------
+The `prepare-sd.sh` is the primary file and handles the user interaction.
+The Raspbian Lite image is obtained and cached locally by this upon runtime,
+ meaning no additional work is required.
+By default Pi's are named according to whether they are a **Bridge** or
+ a **Node**.
+A Bridge is the bridge to the main network and allows the data collected from
+ the nodes to be accessed, ideally this device would have two network
+ adapters be a bridge.
+A Node is a device that reports back on the network.
+
+Usage
+-----
+To use this in your project, you need only edit the `lib/setup.sh` to add your
+ own changes and optionally the `server` folder to add your own frontend.
+From there simply run the script and answer questiosn related to your setup.
+```
+	$ prepare-sd.sh
+```
+
